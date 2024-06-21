@@ -1,42 +1,62 @@
 'use client';
 
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Progress } from '@/components/ui/progress';
 import {
-	daysPassedInYear,
-	timesPassedSinceStartOfYear,
-	percentageOfYearPassed,
-	weekAndMonthPassed,
+	timePassedOnYear,
 } from '@/helpers/yearPercent';
 
 export function ProgressDemo() {
-	const today: Date = new Date();
+	const [progress, setProgress] = useState<number>(0);
+	const [timePassed, setTimePassed] = useState<{
+		hours: number;
+		minutes: number;
+		seconds: number;
+		days: number;
+		weeks: number;
+		months: number;
+		percentage: number;
+	}>({
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		days: 0,
+		weeks: 0,
+		months: 0,
+		percentage: 0,
+	});
 
-	const percentProgress = percentageOfYearPassed(today);
-	const timesPassed = timesPassedSinceStartOfYear(today);
-	const monthAndWeekPassed = weekAndMonthPassed(today);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			const date = new Date();
 
-	const [progress, setProgress] = React.useState<number>(0);
+			const timePassed = timePassedOnYear(date);
 
-	React.useEffect(() => {
-		const timer = setTimeout(() => setProgress(percentProgress), 0);
-		return () => clearTimeout(timer);
-	}, [percentProgress]);
+			setTimePassed(timePassed);
+		}, 1000);
+		
+		return () => clearInterval(interval);
+	}, []);
+	
+	
+	useEffect(() => {
+		setProgress(timePassed.percentage);
+	}, [timePassed.percentage]);
 
 	return (
 		<div className="flex flex-col justify-center items-center gap-2 ">
-			<span className='self-start w-full'>
+			<span className="self-start w-full">
 				<h1 className="text-2xl text-[#16A34A] font-semibold text-center">
-					Porcentagem do ano: {percentProgress.toFixed(2)}%
+					Porcentagem do ano: {timePassed.percentage.toFixed(2)}%
 				</h1>
-				<h1 className="text-2xl text-[#ccc]">Horas passadas: {timesPassed.diffInHours}</h1>
-				<h1 className="text-2xl text-[#ccc]">Minutos passados: {timesPassed.minutes}</h1>
-				<h1 className="text-2xl text-[#ccc]">Segundos passados: {timesPassed.seconds}</h1>
+				<h1 className="text-2xl text-[#ccc]">Horas passadas: {timePassed.hours.toFixed(0)}</h1>
+				<h1 className="text-2xl text-[#ccc]">Minutos passados: {timePassed.minutes.toFixed(0)}</h1>
+				<h1 className="text-2xl text-[#ccc]">Segundos passados: {timePassed.seconds.toFixed(0)}</h1>
 				<h1 className="text-2xl text-[#ccc]">
-					Semanas passadas: {monthAndWeekPassed.weekPassed.toFixed(2)}
+					Semanas passadas: {timePassed.weeks.toFixed(2)}
 				</h1>
 				<h1 className="text-2xl text-[#ccc]">
-					Meses passados: {monthAndWeekPassed.monthPassed.toFixed(2)}
+					Meses passados: {timePassed.months.toFixed(2)}
 				</h1>
 			</span>
 

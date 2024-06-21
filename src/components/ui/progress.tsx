@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
 
 import { cn } from '@/lib/utils';
-import { daysPassedInYear } from '@/helpers/yearPercent';
+import { daysPassedInYear, timePassedOnYear } from '@/helpers/yearPercent';
 
 const today = new Date();
 const daysPasses = daysPassedInYear(today);
@@ -12,8 +12,10 @@ const daysPasses = daysPassedInYear(today);
 const Progress = React.forwardRef<
 	React.ElementRef<typeof ProgressPrimitive.Root>,
 	React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => {
+>(({ className, ...props }, ref) => {
 	const [animatedValue, setAnimatedValue] = React.useState(0);
+
+	const value = timePassedOnYear(today).percentage;
 
 	React.useEffect(() => {
 		let start = 0;
